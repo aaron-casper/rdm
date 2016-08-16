@@ -1,0 +1,1 @@
+killall -u wfh ssh

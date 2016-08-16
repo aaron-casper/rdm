@@ -1,0 +1,57 @@
+
+import datetime
+import subprocess
+import time
+import os
+import psutil
+import socket
+
+network = 'spack-fu.com'
+port = 6667
+CHAN = "#texas"
+citrix_running = ""
+agent_host = socket.gethostname()
+agent_nickname = "rdm_dev_001"
+agent_ver = "0.1_5"
+irc = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )
+irc.connect ( ( network, port ) )
+print irc.recv ( 4096 )
+irc.send ( 'NICK %s\r\n' % agent_host )
+irc.send ( 'USER rdmagnt rdmagnt rdmagnt :Python RDM\r\n' )
+irc.send ( 'JOIN %s\r\n' % CHAN)
+irc.send ( 'PRIVMSG #texas : version %s on host %s\r\n' % (agent_ver, agent_host))
+while True:
+
+	data = irc.recv ( 4096 )
+	if data.find ( 'PING' ) != -1:
+			irc.send ( 'PONG ' + data.split() [ 1 ] + '\r\n' )
+	if data.find ( '!agentver' ) != -1:
+    		irc.send ( 'PRIVMSG %s :version %s\r\n' % (CHAN, agent_ver))
+	if data.find ( '!status' ) != -1:
+		procs = os.popen("ps -A | grep wfica")
+		currentprocs = procs.read()
+		if currentprocs.find('wfica') == -1:
+			citrix_running = "Not Running"
+		else:    
+			citrix_running = "Running"
+		ts = time.time()
+		st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M.%S')
+		cpu=psutil.cpu_percent(interval=1)
+		mem=psutil.virtual_memory()
+		net=psutil.net_io_counters()
+		irc.send ( 'PRIVMSG %s : | client timestamp   || assigned_to    || cpu  || mem  || net_sent || net_recv  || version || Citrix(tm)\r\n' % CHAN)
+		stuffbuffer = ("|" + str(st) + " || " + str(agent_host) + " || " + str(cpu) + " || " + str(mem.percent) + " || " + str(net.bytes_sent) + " || " + str(net.bytes_recv) +  " || " + str(agent_ver) + " || " + str(citrix_running)+"\r\n")
+		irc.send ( 'PRIVMSG %s : %s \r\n' % (CHAN, stuffbuffer))
+if data.find ( '!exec' ) != -1:
+    print ("running tunnel script\n")
+spdtst = str(subprocess.check_output(["./AutoDiag/speedtest-cli.py"]))
+
+    os.popen( "sh ./AutoDiag/tunnel.sh" )
+    irc.send ( 'PRIVMSG %s : Digging SSH tunnel...\r\n' % CHAN)
+if data.find ( '!restart' ) != -1:
+    irc.send ( 'QUIT\r\n' )
+    exit()
+if data.find ( '!sim_error' ) != -1:
+    irc.send ( 'JOIN #ATTENTION\r\n' )
+    irc.send ( 'PRIVMSG #ATTENTION : I need help, something is wrong!\r\n')
+print data

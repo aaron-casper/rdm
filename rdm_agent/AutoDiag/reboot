@@ -1,0 +1,4 @@
+rm ~/.fluxbox/lastwallpaper
+rm /tmp/rdm_agent.pid
+systemctl reboot -i
+
