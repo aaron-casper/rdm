@@ -2,7 +2,7 @@
 
 This is a set of scripts/tools that permit setting up RDM, a botnet for good.
 
-It includes a master/controller bot, agent bots, and a communications network between them.  It also includes a basic web interface backed by sqlite that tracks agent status.
+It is made up of a master/controller bot, agent bots, and a communications network between them.
 
 Be aware, this is a botnet framework, and requires that you either own your own ircd, or have permission from the oper on an existing ircd to start the services.
 
