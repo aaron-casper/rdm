@@ -9,4 +9,4 @@ Be aware, this is a botnet framework, and requires that you either own your own 
 This is as complete as I can make the public release.  Development of this project past this point was swept up in a contract agreement.  As such, I will not be updating this project further.  However, it will remain available to fork as you desire.
 
 Reponsiblity for use of this software lies with the user.  I am not responsible or liable for any result, including damages not limited to bricked equipment or deceased pets.
--floz
+
